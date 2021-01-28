@@ -1,0 +1,32 @@
+import json
+import time
+import requests
+from utils import header
+
+
+def get_url(url):
+    headers = {
+        'User-Agent': header.useragent
+    }
+    resp = requests.get(url, headers=headers)
+    assert resp.status_code == 200
+    acfun_dict = json.loads(resp.text)
+    time.sleep(2)
+    return acfun_dict
+
+
+def parse_page(acfun_dict):
+    rank_list = acfun_dict['rankList']
+    for rank_info in rank_list:
+        item = {}
+        item['封面'] = rank_info['videoCover']
+        item['标题'] = rank_info['contentTitle']
+        item['up主'] = rank_info['userName']
+        item['播放量'] = rank_info['viewCount']
+        item['评论数'] = rank_info['commentCount']
+        item['频道分区'] = rank_info['channelName']
+        print(item)
+
+
+if __name__ == '__main__':
+    parse_page(get_url('https://www.acfun.cn/rest/pc-direct/rank/channel?channelId=&subChannelId=&rankLimit=30&rankPeriod=DAY'))
